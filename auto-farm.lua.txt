@@ -14,6 +14,8 @@ local weapon_args = {
 
 -- TOGGLE (start OFF)
 local enabled = false
+local lastAttack = 0
+local ATTACK_DELAY = 0.05 -- seconds between attacks, tweak this
 
 -- anti-afk
 local VirtualUser = game:GetService("VirtualUser")
@@ -36,7 +38,11 @@ for i,v in pairs(farms:GetChildren()) do
         rs.RenderStepped:Connect(function()
             if enabled then
                 plr.Character.HumanoidRootPart.CFrame = v.Chicken.CFrame
-                weaponRemote:FireServer(weapon_args.a1, weapon_args.a2)
+                local now = tick()
+                if now - lastAttack >= ATTACK_DELAY then
+                    lastAttack = now
+                    weaponRemote:FireServer(weapon_args.a1, weapon_args.a2)
+                end
             end
         end)
     end
