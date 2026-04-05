@@ -14,7 +14,8 @@ local weapon_args = {
 
 -- TOGGLE (start OFF)
 local enabled = false
-local holding = false
+local lastAttack = 0
+local ATTACK_DELAY = 0.3 -- seconds between attacks, tweak this
 
 -- anti-afk
 local VirtualUser = game:GetService("VirtualUser")
@@ -32,28 +33,16 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
--- hold LMB function
-local function holdLMB()
-    if holding then return end
-    holding = true
-    VirtualUser:CaptureController()
-    VirtualUser:ClickButton1(Vector2.new(), true) -- press down
-end
-
-local function releaseLMB()
-    if not holding then return end
-    holding = false
-    VirtualUser:ClickButton1(Vector2.new(), false) -- release
-end
-
 for i,v in pairs(farms:GetChildren()) do
     if tostring(v.Owner.Value) == tostring(plr.Name) then
         rs.RenderStepped:Connect(function()
             if enabled then
                 plr.Character.HumanoidRootPart.CFrame = v.Chicken.CFrame
-                holdLMB()
-            else
-                releaseLMB()
+                local now = tick()
+                if now - lastAttack >= ATTACK_DELAY then
+                    lastAttack = now
+                    weaponRemote:FireServer(weapon_args.a1, weapon_args.a2)
+                end
             end
         end)
     end
