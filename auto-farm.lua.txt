@@ -15,7 +15,7 @@ local weapon_args = {
 -- TOGGLE (start OFF)
 local enabled = false
 local lastAttack = 0
-local ATTACK_DELAY = 0.05 -- seconds between attacks, tweak this
+local ATTACK_DELAY = 0.1 -- seconds between attacks, tweak this
 
 -- anti-afk
 local VirtualUser = game:GetService("VirtualUser")
