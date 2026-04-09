@@ -12,10 +12,11 @@ local weapon_args = {
     a2 = "219629d5067eddcdce55ed7968e9b53f"
 }
 
--- TOGGLE (start OFF)
 local enabled = false
+local paused = false
 local lastAttack = 0
-local ATTACK_DELAY = 0.3 -- seconds between attacks, tweak this
+local ATTACK_DELAY = 0.3
+local PAUSE_DURATION = 240
 
 -- anti-afk
 local VirtualUser = game:GetService("VirtualUser")
@@ -24,12 +25,33 @@ game:GetService("Players").LocalPlayer.Idled:Connect(function()
     VirtualUser:ClickButton2(Vector2.new())
 end)
 
--- press F to toggle ON/OFF
 local UserInputService = game:GetService("UserInputService")
+
+-- press F to pause for 4 minutes
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if input.KeyCode == Enum.KeyCode.F and not gameProcessed then
-        enabled = not enabled
-        print("Auto farm is now:", enabled and "ON" or "OFF")
+        if not paused then
+            paused = true
+            enabled = false
+            print("Paused for 4 minutes...")
+            task.spawn(function()
+                task.wait(PAUSE_DURATION)
+                if paused then
+                    paused = false
+                    enabled = true
+                    print("Auto farm resumed!")
+                end
+            end)
+        end
+    end
+end)
+
+-- press J to force start no matter what
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if input.KeyCode == Enum.KeyCode.J and not gameProcessed then
+        paused = false
+        enabled = true
+        print("Master switch: Farm forced ON!")
     end
 end)
 
